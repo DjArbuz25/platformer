@@ -17,6 +17,7 @@ GREEN = (50, 205, 50)
 BLACK = (0, 0, 0)
 
 hp_font = pygame.font.Font(None, 36)
+pause_font = pygame.font.Font(None, 35)
 font = pygame.font.Font(None, 36)
 
 MENU = 0
@@ -243,6 +244,8 @@ while running:
 
 
     hp_text = hp_font.render(f"HP: {player.hp}%", True, RED)
+    pause_button = Button("PAUSE", WIDTH // 2 - 400, HEIGHT // 2 - 300, 150, 50)
+    pause_button.draw(screen)
     screen.blit(hp_text, (WIDTH-250, 10))
     pygame.display.flip()
     clock.tick(FPS)
