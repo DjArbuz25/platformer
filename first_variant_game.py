@@ -192,6 +192,25 @@ def main_menu():
                         level_button.color = ORANGE
         clock.tick(FPS)
 
+def draw_level_selection(self):
+    self.screen.fill((255, 165, 0))
+
+    font = pygame.font.Font(None, 74)
+    title = font.render("Выберете уровень", True, (0,0,0))
+    self.screen.blit(title, (200,50))
+
+    button_font = pygame.font.Font(None, 50)
+    for i, level in enumerate(self.levels):
+        level_rect = pygame.Rect(300, 150 + i * 100, 200, 50)
+        pygame.draw.rect(self.screen, (0, 255, 0), level_rect)
+        level_text = button_font.render(level, True, (0,0,0))
+        self.screen.blit(level_text, (350,160 + i * 100))
+
+    back_button = pygame.Rect(300, 450, 200, 50)
+    pygame.draw.rect(self.screen, (255, 0, 0), back_button)
+    back_text = button_font.render("Назад", True, (0,0,0))
+    self.screen.blit(level_text, (350, 160 + i * 100))
+
 # Создание персонажа
 player = AnimatedSprite((100, HEIGHT - 150))  # Стартовая позиция на "земле"
 all_sprites = pygame.sprite.Group(player)
