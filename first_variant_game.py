@@ -1,6 +1,10 @@
 import pygame
 import sys
 
+
+
+
+
 # Инициализация Pygame
 pygame.init()
 
@@ -218,6 +222,13 @@ all_sprites = pygame.sprite.Group(player)
 # Основной цикл игры
 current_state = MENU
 running = True
+bot_added = False
+start_time = pygame.time.get_ticks()
+bot_respawn_time = 0
+bot_created = 0
+current_time = pygame.time.get_ticks()
+bots_created = 0
+
 
 while running:
     if current_state == MENU:
@@ -235,6 +246,30 @@ while running:
                         player.jump('left')
                 if event.key == pygame.K_f:  # Атака по нажатию клавиши 'F'
                     player.attack()
+
+        if current_time - start_time > 5000 and not bot_added:
+            if bot_created < 3:
+                bot = Bot((WIDTH - 200, HEIGHT - 150), player)
+                all_sprites.add(bot)
+                bot_added = True
+                bots_created += 1
+
+        if bot_added and bot not in all_sprites:
+            bot_added = False
+            if bots_created < 3:
+                bot_respawn_time = current_time + 1000
+
+        if bot_respawn_time and current_state > bot_respawn_time and bots_created < 3:
+            bot = Bot((WIDTH - 200, HEIGHT - 150), player)
+            all_sprites.add(bot)
+            bot_added = True
+            bots_created += 1
+            bot_respawn_time = 0
+
+
+
+    if player.hp <= 0:
+        current_state == MENU
 
     # Управление персонажем
     keys = pygame.key.get_pressed()

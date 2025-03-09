@@ -34,6 +34,38 @@ class EasyBot(BaseCharacter):
                 self.change_animation('attack')
                 self.last_attack_time = now
 
-update(self, player)
-super().update()
-self.ai_update(player)
+    def move_towards_player(self):
+        if self.player.rect.centerx > self.rect.centerx:
+            self.rect.x += self.speed
+            self.change_animation('walk_right')
+        elif self.player.rect.centerx < self.rect.centerx:
+            self.rect.x -= self.speed
+            self.change_animation('walk_left')
+
+    def attack(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_attack_time > self.attack_cooldown:
+            self.last_attack_time = now
+            self.is_attacking = now
+            self.is_attacking = True
+
+            if self.player.rect.centerx > self.rect.centerx:
+                self.change_animation('attack_right')
+            else:
+                self.change_animation('attack_left')
+
+
+            distacne = abs(self.rect.centerx - self.player.centerx)
+
+            if distacne < 10:
+                damage = int(0.03 * self.player.hp)
+                self.player.hp -= damage
+                if self.player.hp < 0:
+                    self.player.hp = 0
+
+    def change_animation(self, animation):
+        if self.current_animation != animation:
+            self.current_animation = animation
+            self.sprites = self.spritesheets[self.current_animation]
+            self.current_sprite = 0
+            self.animation_speed = self.animation_speeds[animation]
