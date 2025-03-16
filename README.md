@@ -4,4 +4,4 @@ III level - 15 bots + Hard bot
 
 - level menu from main menu pause button
 
-* - подобрать sprite для hard bot (был лучник)
+*  подобрать sprite для hard bot (был лучник)
