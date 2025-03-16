@@ -1,8 +1,8 @@
-from .bot import BaseCharacter
+from bot import BaseCharacter
 import pygame
 
 class EasyBot(BaseCharacter):
-    def __init__(self, position):
+    def __init__(self, position, player):
         animations_config = {
             'idle': {'path': 'assets/Idle.png', 'frames': 6},
             'walk': {'path': 'assets/Walk.png', 'frames': 8},

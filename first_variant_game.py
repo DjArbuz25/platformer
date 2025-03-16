@@ -1,6 +1,7 @@
 import pygame
 import sys
-
+import time
+from EasyBot import EasyBot
 
 
 
@@ -63,11 +64,11 @@ class Bot(pygame.sprite.Sprite):
             'attack_left': 0.85
         }
         self.spritesheets = {
-            'idle': self.load_spritesheet('assets/Shinobi/Idle.png', 6),
-            'walk_right': self.load_spritesheet('assets/Shinobi/Walk.png', 8),
-            'walk_left': self.load_spritesheet('assets/Shinobi/Walk.png', 8, flip=True),
-            'attack_right': self.load_spritesheet('assets/Shinobi/Attack_1.png', 5),
-            'attack_left': self.load_spritesheet('assets/Shinobi/Attack_2.png', 3, flip=True),
+            'idle': self.load_spritesheet('Idle.png', 6),
+            'walk_right': self.load_spritesheet('Walk.png', 8),
+            'walk_left': self.load_spritesheet('Walk.png', 8, flip=True),
+            'attack_right': self.load_spritesheet('Attack_1.png', 5),
+            'attack_left': self.load_spritesheet('Attack_2.png', 3, flip=True),
         }
         self.current_animation = 'idle'
         self.sprites = self.spritesheets[self.current_animation]
@@ -258,6 +259,9 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 self.change_animation('attack_right')
             elif self.current_animation == 'walk_left':
                 self.change_animation('attack_left')
+            for sprite in all_sprites:
+                if isinstance(sprite, Bot) and abs(self.rect.centerx - sprite.rect.centerx) < 100:
+                    sprite.hp -= 10
 
     def change_animation(self, animation):
         if self.current_animation != animation:
@@ -344,17 +348,9 @@ while running:
         current_state = main_menu()
 
     elif current_state == GAME:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:  # Прыжок по нажатию пробела
-                    if player.current_animation == 'walk_right' or player.current_animation == 'idle':
-                        player.jump('right')
-                    elif player.current_animation == 'walk_left':
-                        player.jump('left')
-                if event.key == pygame.K_f:  # Атака по нажатию клавиши 'F'
-                    player.attack()
+        current_time = pygame.time.get_ticks()
+        if player.hp <= 0:
+            current_state == MENU
 
         if current_time - start_time > 5000 and not bot_added:
             if bot_created < 3:
@@ -375,7 +371,17 @@ while running:
             bots_created += 1
             bot_respawn_time = 0
 
-
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:  # Прыжок по нажатию пробела
+                    if player.current_animation == 'walk_right' or player.current_animation == 'idle':
+                        player.jump('right')
+                    elif player.current_animation == 'walk_left':
+                        player.jump('left')
+                if event.key == pygame.K_f:  # Атака по нажатию клавиши 'F'
+                    player.attack()
 
     if player.hp <= 0:
         current_state == MENU
@@ -404,11 +410,23 @@ while running:
     screen.blit(background, (0, 0))
     all_sprites.update()
     all_sprites.draw(screen)
+    if player.hp <= 0:
+        game_over_text = font.render("YOU ARE LOH", True, (255, 0, 0))
+        text_rect = game_over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        screen.blit(game_over_text, text_rect)
+        pygame.display.flip()
+        time.sleep(3)
+        current_state = MENU
+        continue
 
 
     hp_text = hp_font.render(f"HP: {player.hp}%", True, RED)
     pause_button = Button("PAUSE", WIDTH // 2 - 400, HEIGHT // 2 - 300, 150, 50)
-    pause_button.draw(screen)
+    for sprite in all_sprites:
+        if isinstance(sprite,Bot):
+            bot_hp_text = hp_font.render(f"Bot HP: {sprite.hp}%", True, RED)
+            screen.blit(bot_hp_text, (10,10))
+    # pause_button.draw(screen)
     screen.blit(hp_text, (WIDTH-250, 10))
     pygame.display.flip()
     clock.tick(FPS)
