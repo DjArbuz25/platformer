@@ -52,6 +52,7 @@ class Button:
 
 
 class Bot(pygame.sprite.Sprite):
+    # конструктор класса __init__ типо
     def __init__(self, position, player):
         super().__init__()
         self.player = player
