@@ -22,9 +22,9 @@ class AnimatedSprite(pygame.sprite.Sprite):
         super().__init__()
         # Загружаем спрайты для анимаций
         self.spritesheets = {
-            'idle': self.load_spritesheet('Idle.png', 4),
-            'walk_right': self.load_spritesheet('Walk.png', 6),
-            'walk_left': self.load_spritesheet('Walk.png', 6, flip=True),  # Отражаем спрайты для ходьбы влево
+            'idle': self.load_spritesheet('PlayerAssets/Idle.png', 4),
+            'walk_right': self.load_spritesheet('PlayerAssets/Walk.png', 6),
+            'walk_left': self.load_spritesheet('PlayerAssets/Walk.png', 6, flip=True),  # Отражаем спрайты для ходьбы влево
         }
         self.current_animation = 'idle'
         self.sprites = self.spritesheets[self.current_animation]

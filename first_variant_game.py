@@ -3,8 +3,8 @@ import sys
 import time
 from EasyBot import EasyBot
 
-
-
+#Счетчики
+COUNT_OF_DEATH_BOTS = 0
 
 # Инициализация Pygame
 pygame.init()
@@ -22,6 +22,7 @@ GREEN = (50, 205, 50)
 BLACK = (0, 0, 0)
 
 hp_font = pygame.font.Font(None, 36)
+killedbots_font = pygame.font.Font(None, 36)
 pause_font = pygame.font.Font(None, 35)
 font = pygame.font.Font(None, 36)
 
@@ -65,11 +66,11 @@ class Bot(pygame.sprite.Sprite):
             'attack_left': 0.85
         }
         self.spritesheets = {
-            'idle': self.load_spritesheet('Idle.png', 6),
-            'walk_right': self.load_spritesheet('Walk.png', 8),
-            'walk_left': self.load_spritesheet('Walk.png', 8, flip=True),
-            'attack_right': self.load_spritesheet('Attack_1.png', 5),
-            'attack_left': self.load_spritesheet('Attack_2.png', 3, flip=True),
+            'idle': self.load_spritesheet('PlayerAssets/Idle.png', 6),
+            'walk_right': self.load_spritesheet('PlayerAssets/Walk.png', 8),
+            'walk_left': self.load_spritesheet('PlayerAssets/Walk.png', 8, flip=True),
+            'attack_right': self.load_spritesheet('PlayerAssets/Attack_1.png', 5),
+            'attack_left': self.load_spritesheet('PlayerAssets/Attack_2.png', 3, flip=True),
         }
         self.current_animation = 'idle'
         self.sprites = self.spritesheets[self.current_animation]
@@ -102,7 +103,10 @@ class Bot(pygame.sprite.Sprite):
 
     def update(self):
         if self.hp <= 0:
-            self.kill()  # Удаляем бота из групп спрайтов
+            self.kill()
+            global COUNT_OF_DEATH_BOTS
+            COUNT_OF_DEATH_BOTS += 1
+            sound_kill()
             global bot_respawn_time, bots_created
             if bots_created < 3:
                 bot_respawn_time = pygame.time.get_ticks() + 1000  # Планируем появление через 1 секунду
@@ -152,7 +156,7 @@ class Bot(pygame.sprite.Sprite):
             else:
                 self.change_animation('attack_left')
             if abs(self.rect.centerx - self.player.rect.centerx) < self.attack_distance:
-                self.player.hp -= 10
+                self.player.hp -= 3
 
     def change_animation(self, animation):
         if self.current_animation != animation:
@@ -178,13 +182,13 @@ class AnimatedSprite(pygame.sprite.Sprite):
         }
         # Загружаем спрайты для анимаций
         self.spritesheets = {
-            'idle': self.load_spritesheet('Idle.png', 6),
-            'walk_right': self.load_spritesheet('Walk.png', 8),
-            'walk_left': self.load_spritesheet('Walk.png', 8, flip=True),
-            'jump_right': self.load_spritesheet('Jump.png', 10),  # Анимация прыжка вправо
-            'jump_left': self.load_spritesheet('Jump.png', 10, flip=True),  # Анимация прыжка влево
-            'attack_right': self.load_spritesheet('Attack_1.png', 4),  # Анимация атаки вправо
-            'attack_left': self.load_spritesheet('Attack_1.png', 4, flip=True),  # Анимация атаки влево
+            'idle': self.load_spritesheet('PlayerAssets/Idle.png', 6),
+            'walk_right': self.load_spritesheet('PlayerAssets/Walk.png', 8),
+            'walk_left': self.load_spritesheet('PlayerAssets/Walk.png', 8, flip=True),
+            'jump_right': self.load_spritesheet('PlayerAssets/Jump.png', 10),  # Анимация прыжка вправо
+            'jump_left': self.load_spritesheet('PlayerAssets/Jump.png', 10, flip=True),  # Анимация прыжка влево
+            'attack_right': self.load_spritesheet('PlayerAssets/Attack_1.png', 4),  # Анимация атаки вправо
+            'attack_left': self.load_spritesheet('PlayerAssets/Attack_1.png', 4, flip=True),  # Анимация атаки влево
         }
         self.current_animation = 'idle'
         self.sprites = self.spritesheets[self.current_animation]
@@ -329,6 +333,18 @@ def draw_level_selection(self):
     back_text = button_font.render("Назад", True, (0,0,0))
     self.screen.blit(level_text, (350, 160 + i * 100))
 
+
+def sound_kill():
+    sound_file = 'pukane-11.wav'
+    sound_effect = pygame.mixer.Sound(sound_file)
+    global COUNT_OF_DEATH_BOTS
+    if COUNT_OF_DEATH_BOTS == 3:
+        sound_effect.play()
+        print("3")
+
+
+
+
 # Создание персонажа
 player = AnimatedSprite((100, HEIGHT - 150))  # Стартовая позиция на "земле"
 all_sprites = pygame.sprite.Group(player)
@@ -421,6 +437,10 @@ while running:
         continue
 
 
+    kb_text = killedbots_font.render(f"KILLED BOTS: {COUNT_OF_DEATH_BOTS}", True, RED)
+
+
+
     hp_text = hp_font.render(f"HP: {player.hp}%", True, RED)
     pause_button = Button("PAUSE", WIDTH // 2 - 400, HEIGHT // 2 - 300, 150, 50)
     for sprite in all_sprites:
@@ -429,8 +449,10 @@ while running:
             screen.blit(bot_hp_text, (10,10))
     # pause_button.draw(screen)
     screen.blit(hp_text, (WIDTH-250, 10))
+    screen.blit(kb_text, (WIDTH - 500, 10))
     pygame.display.flip()
     clock.tick(FPS)
 
 pygame.quit()
 sys.exit()
+#добавить анимацию смерти боту и игроку
