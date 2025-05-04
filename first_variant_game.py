@@ -266,7 +266,10 @@ class AnimatedSprite(pygame.sprite.Sprite):
                 self.change_animation('attack_left')
             for sprite in all_sprites:
                 if isinstance(sprite, Bot) and abs(self.rect.centerx - sprite.rect.centerx) < 100:
+                    soundd_file = 'zvuk-udara.wav'
+                    soundd_effect = pygame.mixer.Sound(soundd_file)
                     sprite.hp -= 10
+                    soundd_effect.play()
 
     def change_animation(self, animation):
         if self.current_animation != animation:
